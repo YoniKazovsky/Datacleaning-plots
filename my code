@@ -1,0 +1,40 @@
+football <- read_csv("datasets/soccer.csv")
+
+football %>% glimpse()
+
+football <- football %>%
+  mutate(Goals_per_Appearance = Goals / Appearances,
+         Conversion_rate = Goals / Shots)
+football %>% glimpse()
+
+football_selected <- football %>%
+  select(Conversion_rate, Goals_per_Appearance, Goals, `Shots on target`, Appearances, Shots, Age, Position, Offsides) %>%
+  drop_na()
+football_selected = football_selected %>%
+  rename(Shots_on_target = `Shots on target`)
+  
+football_selected %>% glimpse()
+
+set.seed(310)
+
+football_split <- initial_split(football_selected, prop = 0.75)
+football_train <- training(football_split)
+football_test <- testing(football_split)
+
+football_train %>% glimpse()
+
+
+# for reg model
+ggplot(football_train, aes(x = Conversion_rate, y = Goals_per_Appearance, color = Position)) +
+  geom_point() +
+  labs(x = "Conversion Rate", y = "Goals") +
+  ggtitle("Relationship between Conv Rate and Goals")
+
+
+# for clustering
+ggplot(football, aes(x = Appearances, y = Goals_per_Appearance, color = cluster)) +
+  geom_point() +
+  labs(title = "Appearances vs Goals per", x = "Appearances", y = "Goals per Appearance")
+
+ggpairs(football, columns = c("Goals", "Appearances", "Goals_per_Appearance"), aes(color = cluster))
+
